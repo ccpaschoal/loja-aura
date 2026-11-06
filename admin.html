@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#0E0E0E">
+  <title>Pedidos · AURA</title>
+  <link rel="stylesheet" href="styles/style.css?v=1">
+  <link rel="stylesheet" href="styles/admin.css?v=1">
+  <script src="scripts/admin.js?v=1" defer></script>
+</head>
+<body>
+  <main class="painel">
+    <form id="login" class="login" hidden>
+      <h1>Pedidos AURA</h1>
+      <label class="campo">Senha
+        <input type="password" name="senha" autocomplete="current-password" required>
+      </label>
+      <button class="botao botao-cheio">Entrar</button>
+      <p class="erro" id="login-erro" role="alert"></p>
+    </form>
+
+    <section id="area" hidden>
+      <div class="painel-topo">
+        <h1>Pedidos</h1>
+        <div class="filtros" role="group" aria-label="Filtrar pedidos">
+          <button type="button" data-filtro="comprar" aria-pressed="true">A comprar</button>
+          <button type="button" data-filtro="caminho" aria-pressed="false">A caminho</button>
+          <button type="button" data-filtro="todos" aria-pressed="false">Todos</button>
+        </div>
+        <button type="button" class="botao botao-pequeno" id="atualizar">Atualizar</button>
+      </div>
+      <ul class="pendencias" id="pendencias"></ul>
+      <div id="lista" class="lista" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <template id="modelo">
+    <article class="pedido-card">
+      <header>
+        <h2 class="p-titulo"></h2>
+        <span class="p-status"></span>
+      </header>
+      <p class="p-cliente"></p>
+      <div class="p-endereco"><pre></pre><button type="button" class="botao botao-pequeno p-copiar">Copiar dados de entrega</button></div>
+      <form class="p-form">
+        <div class="linha">
+          <label class="campo">Etapa
+            <select name="etapa">
+              <option value="novo">Novo (comprar no AliExpress)</option>
+              <option value="comprado">Comprado no AliExpress</option>
+              <option value="enviado">Enviado</option>
+              <option value="entregue">Entregue</option>
+              <option value="cancelado">Cancelado</option>
+            </select>
+          </label>
+          <label class="campo">Nº pedido AliExpress <input name="ali_pedido" maxlength="40"></label>
+          <label class="campo">Código de rastreio <input name="rastreio" maxlength="40"></label>
+        </div>
+        <label class="campo">Observação <input name="obs" maxlength="300"></label>
+        <div class="p-acoes">
+          <button class="botao botao-pequeno">Salvar</button>
+          <a class="p-whats" target="_blank" rel="noopener">Mandar rastreio no WhatsApp</a>
+          <span class="p-salvo" aria-live="polite"></span>
+        </div>
+      </form>
+    </article>
+  </template>
+</body>
+</html>

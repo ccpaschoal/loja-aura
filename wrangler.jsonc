@@ -1,0 +1,13 @@
+// Cloudflare Pages: https://lojaaura.pages.dev
+// Site estático (pasta dist, gerada pelo build.mjs) + API de pedidos (worker/, vai como dist/_worker.js) + banco D1.
+// Publicar: npm run deploy · Segredos: wrangler pages secret put NOME (ver README)
+{
+  "$schema": "https://unpkg.com/wrangler@4.157.0/config-schema.json",
+  "name": "lojaaura",
+  "pages_build_output_dir": "dist",
+  "compatibility_date": "2026-11-03",
+  "vars": { "SITE_URL": "https://lojaaura.pages.dev", "WHATSAPP_LOJA": "5521982566564" },
+  "d1_databases": [
+    { "binding": "DB", "database_name": "aura", "database_id": "92e8f4ed-b626-4e2f-9f38-8e2ce68858e5", "migrations_dir": "migrations" }
+  ]
+}

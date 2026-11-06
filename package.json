@@ -1,0 +1,14 @@
+{
+  "name": "loja-aura",
+  "private": true,
+  "type": "module",
+  "description": "Loja AURA: página do fone UGREEN HiTune S3 Air com pagamento pelo Mercado Pago (Cloudflare Pages + D1)",
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node --test tests/",
+    "dev": "node build.mjs && wrangler pages dev",
+    "banco:local": "wrangler d1 migrations apply aura --local",
+    "banco": "wrangler d1 migrations apply aura --remote",
+    "deploy": "node build.mjs && wrangler pages deploy --branch main --commit-dirty=true"
+  }
+}

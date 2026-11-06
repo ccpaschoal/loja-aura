@@ -1,0 +1,26 @@
+/* AURA · painel de pedidos */
+.painel { max-width: 1000px; margin: 0 auto; padding: 2rem 16px 4rem; }
+.login { max-width: 360px; margin: 12vh auto 0; display: grid; gap: 1rem; }
+.login h1, .painel-topo h1 { font-size: 2rem; }
+.painel-topo { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin-bottom: 1.2rem; }
+.painel-topo h1 { margin-right: auto; }
+.filtros { display: flex; gap: .4rem; }
+.filtros button { padding: .45rem .9rem; border-radius: 999px; border: 2px solid var(--linha); background: none; color: var(--papel); font: inherit; cursor: pointer; }
+.filtros button[aria-pressed="true"] { border-color: var(--mostarda); color: var(--mostarda); }
+.pendencias { margin: 0 0 1.2rem; padding: 0; list-style: none; }
+.pendencias li { margin-bottom: .5rem; padding: .8rem 1rem; border-radius: 10px; background: #2A1F0A; border: 1px solid var(--mostarda); }
+.lista { display: grid; gap: 1rem; }
+.vazio { color: var(--cinza); }
+.pedido-card { padding: 1.2rem; border-radius: var(--raio); background: var(--carvao); border: 1px solid #2A2A2A; }
+.pedido-card header { display: flex; justify-content: space-between; gap: 1rem; align-items: baseline; }
+.p-titulo { font-size: 1.2rem; }
+.p-status { padding: .2rem .7rem; border-radius: 999px; font-size: .85rem; font-weight: 700; background: #333; white-space: nowrap; }
+.p-status.pago { background: #1F4D2B; }
+.p-status.conferir, .p-status.estornado { background: #5A1F1F; }
+.p-status.whatsapp, .p-status.pendente { background: #4A3A10; }
+.p-cliente { margin: .6rem 0; color: #D6D6D1; }
+.p-endereco { display: flex; flex-wrap: wrap; gap: .8rem; align-items: start; }
+.p-endereco pre { flex: 1 1 320px; margin: 0; padding: .8rem; border-radius: 10px; background: var(--tinta); font: .9rem/1.5 'Archivo', sans-serif; white-space: pre-wrap; }
+.p-acoes { display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; margin-top: 1rem; }
+.p-salvo { color: var(--cinza); }
+@media (max-width: 600px) { .painel-topo h1 { width: 100%; } }
