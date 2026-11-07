@@ -3,7 +3,7 @@
 Página de venda do fone UGREEN HiTune S3 Air (branco e preto) com pagamento pelo Mercado Pago.
 
 - Site: https://lojaaura.pages.dev
-- Painel de pedidos: https://lojaaura.pages.dev/admin.html (senha em `Desktop\13 - LOJA AURA\7 - SENHA DO PAINEL.txt`, fora do repositório)
+- Painel de pedidos: https://lojaaura.pages.dev/admin.html (senha em `Desktop\4 - LOJA AURA\6 - SENHA DO PAINEL.txt`, fora do repositório)
 
 ## Como funciona
 
