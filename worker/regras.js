@@ -34,8 +34,8 @@ const texto = (v, max) => String(v ?? '').replace(/[\u0000-\u001f<>]/g, '').repl
 export function validarPedido(b) {
   if (!b || typeof b !== 'object' || Array.isArray(b)) return { erro: 'Dados inválidos.' };
   if (b.site) return { erro: 'Dados inválidos.' }; // campo-isca contra robôs
-  const cor = String(b.cor || '');
-  if (!PRODUTO.cores[cor]) return { erro: 'Escolha a cor do fone.', campo: 'cor' };
+  const cor = typeof b.cor === 'string' ? b.cor : '';
+  if (!Object.hasOwn(PRODUTO.cores, cor)) return { erro: 'Escolha a cor do fone.', campo: 'cor' };
   const qtd = Number(b.qtd);
   if (!Number.isInteger(qtd) || qtd < 1 || qtd > PRODUTO.maxQtd) return { erro: `Escolha de 1 a ${PRODUTO.maxQtd} unidades.`, campo: 'qtd' };
   const forma = b.forma === 'pix' ? 'pix' : b.forma === 'cartao' ? 'cartao' : null;

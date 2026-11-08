@@ -7,15 +7,19 @@
   const form = $('#pedido');
   const f = form.elements;
   let modo = 'mercadopago';
+  let trocaFoto = 0;
 
   /* Cor: a vitrine e o formulário andam juntos */
   function mostrarCor(cor) {
+    const troca = ++trocaFoto;
     const img = $('#foto-fone');
+    img.classList.remove('trocando');
     if (!img.src.includes(`fone-${cor}.`)) {
       img.classList.add('trocando');
       const nova = new Image();
       nova.src = `assets/fone-${cor}.webp`;
       const trocar = () => {
+        if (troca !== trocaFoto) return;
         img.src = nova.src;
         $('#foto-fonte').srcset = `assets/fone-${cor}-480.webp`;
         img.alt = `Fone S3 Air ${COR[cor].toLowerCase()}: os dois fones com clipe e o estojo de carga`;
@@ -51,15 +55,25 @@
 
   /* CEP: preenche o endereço pelo ViaCEP */
   let ultimoCep = '';
+  let buscaCep = 0;
   f.cep.addEventListener('input', async () => {
     const cep = f.cep.value.replace(/\D/g, '');
-    if (cep.length !== 8 || cep === ultimoCep) return;
-    ultimoCep = cep;
     const ajuda = $('#cep-ajuda');
+    if (cep.length !== 8) {
+      buscaCep++;
+      ultimoCep = '';
+      ajuda.textContent = '';
+      return;
+    }
+    if (cep === ultimoCep) return;
+    const busca = ++buscaCep;
+    ultimoCep = cep;
     ajuda.textContent = 'Buscando endereço…';
     try {
       const r = await fetch(`https://viacep.com.br/ws/${cep}/json/`, { signal: AbortSignal.timeout(6000) });
+      if (!r.ok) throw new Error('CEP indisponível');
       const d = await r.json();
+      if (busca !== buscaCep || f.cep.value.replace(/\D/g, '') !== cep) return;
       if (d.erro) { ajuda.textContent = 'CEP não encontrado. Preencha o endereço abaixo.'; return; }
       if (d.logradouro) f.rua.value = d.logradouro;
       if (d.bairro) f.bairro.value = d.bairro;
@@ -68,6 +82,8 @@
       ajuda.textContent = '';
       (d.logradouro ? f.numero : f.rua).focus();
     } catch {
+      if (busca !== buscaCep || f.cep.value.replace(/\D/g, '') !== cep) return;
+      ultimoCep = '';
       ajuda.textContent = 'Não deu para buscar o CEP. Preencha o endereço abaixo.';
     }
   });

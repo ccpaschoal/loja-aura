@@ -16,14 +16,15 @@
   }
   const pago = () => mostrar('Pagamento aprovado!',
     'Recebemos seu pedido. Você recebe por e-mail o código de rastreio quando ele for despachado. O prazo é de 15 a 30 dias úteis.');
-  const pendente = () => mostrar('Falta pagar',
-    'Seu pedido está guardado. Pague o Pix ou o boleto em até 3 dias para confirmar. Assim que o pagamento cair, avisamos por e-mail.');
+  const pendente = () => mostrar('Ainda sem confirmação',
+    'Seu pedido está guardado, mas o pagamento ainda não foi confirmado. Se for Pix ou boleto, pague em até 3 dias; assim que cair, avisamos por e-mail. Se o pagamento não passou, você pode tentar de novo.');
   const falhou = () => mostrar('O pagamento não foi aprovado',
     'Nada foi cobrado. Você pode tentar de novo com outra forma de pagamento.', 'Tentar de novo', './#comprar');
+  const naoConfirmado = () => mostrar('Não encontramos o pedido',
+    'Se você pagou, guarde o comprovante e fale com a gente pelo WhatsApp.');
 
   if (!/^AU[0-9A-Z]{8}$/.test(id)) {
-    if (mpStatus === 'approved') return pago();
-    return mostrar('Não encontramos o pedido', 'Se você pagou, guarde o comprovante e fale com a gente pelo WhatsApp.');
+    return naoConfirmado();
   }
 
   let tentativas = 0;
@@ -31,13 +32,14 @@
     tentativas++;
     try {
       const r = await fetch(`api/status?id=${encodeURIComponent(id)}`, { cache: 'no-store' });
+      if (!r.ok) throw new Error('Pedido não confirmado');
       const d = await r.json();
       if (d.status === 'pago' || d.status === 'conferir') return pago();
+      if (d.status === 'falhou' || d.status === 'recusado') return falhou();
     } catch {}
     // O aviso do Mercado Pago pode chegar alguns segundos depois da volta para o site
     if (mpStatus === 'approved' && tentativas < 8) return setTimeout(conferir, 2500);
-    if (mpStatus === 'approved') return mostrar('Pagamento recebido', 'O Mercado Pago aprovou seu pagamento. A confirmação aparece aqui em alguns minutos; você também recebe por e-mail.');
-    if (['rejected', 'null', 'failure'].includes(mpStatus)) return falhou();
+    if (mpStatus === 'approved') return naoConfirmado();
     return pendente();
   }
   conferir();

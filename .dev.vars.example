@@ -1,0 +1,17 @@
+# Exemplo local do Wrangler: copie para .dev.vars somente se precisar.
+# Não copie este arquivo sobre um .dev.vars existente com credenciais reais.
+# Valores abaixo são fictícios/vazios; não habilitam serviços externos.
+ADMIN_PASSWORD="SUBSTITUA_POR_SENHA_LOCAL"
+IP_SALT="SUBSTITUA_POR_VALOR_ALEATORIO_LOCAL"
+
+# Pagamentos são opcionais. Sem token/segredo, o fluxo existente usa WhatsApp.
+MP_MODO="teste"
+MP_ACCESS_TOKEN=""
+MP_ACCESS_TOKEN_TESTE=""
+MP_WEBHOOK_SECRET=""
+
+# Avisos opcionais; deixe vazios para não utilizar esses serviços.
+RESEND_API_KEY=""
+EMAIL_DONA=""
+EMAIL_REMETENTE=""
+NTFY_TOPICO=""

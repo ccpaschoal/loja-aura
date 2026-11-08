@@ -19,8 +19,26 @@ const ETAPAS = ['novo', 'comprado', 'enviado', 'entregue', 'cancelado'];
 
 const objeto = (b) => b !== null && typeof b === 'object' && !Array.isArray(b);
 async function lerJSON(req) {
-  const t = await req.text();
-  if (t.length > MAX_CORPO) return undefined;
+  if (!req.body) return undefined;
+  const reader = req.body.getReader();
+  const decoder = new TextDecoder();
+  let tamanho = 0;
+  let t = '';
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      tamanho += value.byteLength;
+      if (tamanho > MAX_CORPO) {
+        await reader.cancel().catch(() => {});
+        throw Object.assign(new Error('Dados grandes demais.'), { status: 413 });
+      }
+      t += decoder.decode(value, { stream: true });
+    }
+    t += decoder.decode();
+  } finally {
+    reader.releaseLock();
+  }
   try { return JSON.parse(t || 'null'); } catch { return undefined; }
 }
 const base = (env, req) => (env.SITE_URL || new URL(req.url).origin).replace(/\/$/, '');
@@ -104,7 +122,7 @@ async function pedido(req, env) {
     await db.prepare('UPDATE pedidos SET preferencia_id = ? WHERE id = ?').bind(String(pref.id || ''), id).run();
     return json({ id, init_point: pref.init_point });
   } catch (e) {
-    console.error('Mercado Pago:', e?.message, JSON.stringify(e?.detalhe || ''));
+    console.error('Mercado Pago:', e?.name || 'Error', Number(e?.status) || 0);
     if (e?.name !== 'TimeoutError') await db.prepare("UPDATE pedidos SET status = 'falhou' WHERE id = ?").bind(id).run();
     return json({ erro: 'Não foi possível abrir o pagamento agora. Tente de novo em instantes.' }, 502);
   }
@@ -165,9 +183,11 @@ async function webhook(req, env) {
 async function status(req, env) {
   const id = new URL(req.url).searchParams.get('id') || '';
   if (!RE_ID.test(id)) return json({ erro: 'Pedido inválido.' }, 400);
-  const p = await env.DB.prepare('SELECT status, etapa FROM pedidos WHERE id = ?').bind(id).first();
+  const p = await env.DB.prepare('SELECT status, etapa, metodo FROM pedidos WHERE id = ?').bind(id).first();
   if (!p) return json({ erro: 'Pedido não encontrado.' }, 404);
-  return json({ status: p.status, etapa: p.etapa });
+  // O webhook só grava `metodo` num pedido ainda pendente quando o Mercado Pago confirma (via API) recusa/cancelamento.
+  const recusado = p.status === 'pendente' && !!p.metodo;
+  return json({ status: recusado ? 'recusado' : p.status, etapa: p.etapa });
 }
 
 /* ── Painel ── */
@@ -254,7 +274,8 @@ export default {
       if (Number(req.headers.get('Content-Length') || 0) > MAX_CORPO) return json({ erro: 'Dados grandes demais.' }, 413);
       return await rota(req, env, ctx);
     } catch (e) {
-      console.error(url.pathname, e?.stack || e);
+      if (e?.status === 413) return json({ erro: 'Dados grandes demais.' }, 413);
+      console.error(url.pathname, e?.name || 'Error');
       return json({ erro: 'Erro no servidor. Tente de novo.' }, 500);
     }
   },

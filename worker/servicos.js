@@ -19,7 +19,8 @@ async function mp(env, caminho, { metodo = 'GET', corpo, idempotencia } = {}) {
     signal: AbortSignal.timeout(10000),
   });
   const j = await r.json().catch(() => ({}));
-  if (!r.ok) throw Object.assign(new Error(j.message || `Mercado Pago ${r.status}`), { status: r.status, detalhe: j });
+  // Respostas de erro externas podem repetir dados do pedido ou credenciais.
+  if (!r.ok) throw Object.assign(new Error(`Mercado Pago ${r.status}`), { status: r.status });
   return j;
 }
 export const criarPreferencia = (env, corpo, idempotencia) => mp(env, '/checkout/preferences', { metodo: 'POST', corpo, idempotencia });
@@ -98,10 +99,10 @@ export async function enviarEmail(env, p) {
       }),
       signal: AbortSignal.timeout(10000),
     });
-    if (!r.ok) console.error('Resend:', r.status, (await r.text()).slice(0, 300));
+    if (!r.ok) console.error('Resend:', r.status);
     return r.ok;
   } catch (e) {
-    console.error('Resend:', e?.message);
+    console.error('Resend:', e?.name || 'Error');
     return false;
   }
 }
@@ -125,7 +126,7 @@ export async function enviarNtfy(env, p) {
     });
     return r.ok;
   } catch (e) {
-    console.error('ntfy:', e?.message);
+    console.error('ntfy:', e?.name || 'Error');
     return false;
   }
 }

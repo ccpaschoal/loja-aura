@@ -34,6 +34,12 @@ test('pedido inválido', () => {
   assert.ok(validarPedido({ ...ok, site: 'robo' }).erro);
   assert.ok(validarPedido(null).erro);
 });
+
+test('a cor precisa pertencer ao catálogo, sem propriedades herdadas', () => {
+  for (const cor of ['constructor', '__proto__', 'toString', {}, null]) {
+    assert.equal(validarPedido({ ...ok, cor }).campo, 'cor');
+  }
+});
 test('código do pedido', () => {
   for (let i = 0; i < 50; i++) assert.match(novoId(), RE_ID);
 });
